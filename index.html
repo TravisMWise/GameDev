@@ -16,14 +16,15 @@
         <script>
             var canvas = document.getElementById("asteroids");
             var context = canvas.getContext("2d");
+            var color = 'black'
+            context.strokeStyle = color;
+            context.lineWidth = 1;
 
-            for (var i = -300; i <= 400; i += 25) {
-                drawRec(context, i,i,250,250,'black');
+            for (var i = -500; i <= 500; i += 10) {
+                drawRec(context, i,i,500,500);
             }
             
-            function drawRec(ctx, x, y, w, h, color) {
-                context.strokeStyle = color;
-                context.lineWidth = 5;
+            function drawRec(ctx, x, y, w, h) {
                 context.rect(x,y,w,h);
             }
             
