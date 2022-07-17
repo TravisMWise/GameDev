@@ -4,9 +4,18 @@
         <title>
             HTML canvas
         </title>
+        <style>
+            body {
+                text-align: center;
+                font-family: sans-serif;
+            }
+            canvas {
+                background-color: black;
+            }
+        </style>
     </head>
     <body>
-        <h1>This is an HTML canvas</h1>
+        <h1>Canvas</h1>
         <canvas
             id="asteroids"
             width="400"
@@ -14,21 +23,38 @@
         ></canvas>
 
         <script>
+            // Get the canvas and set the context to 2d
             var canvas = document.getElementById("asteroids");
             var context = canvas.getContext("2d");
-            var color = 'black'
-            context.strokeStyle = color;
-            context.lineWidth = 1;
 
-            for (var i = -500; i <= 500; i += 10) {
-                drawRec(context, i,i,500,500);
+            // Set the size of the canvas
+            var dim = 500;
+            canvas.width = canvas.height = dim;
+
+            // Set the color and stroke for the context
+            context.strokeStyle = "dimgray";
+            context.lineWidth = 5;
+
+            for (var i = -dim; i <= dim; i += 20) {
+                context.rect(i,i,dim,dim);
             }
-            
-            function drawRec(ctx, x, y, w, h) {
-                context.rect(x,y,w,h);
-            }
-            
             context.stroke();
+            context.strokeStyle = "black";
+            context.lineWidth = 2;
+            context.stroke();
+            
+            // Rendering text
+            context.textAlign="center";
+            context.font = "42px Arial";
+            context.fillStyle = "lightgrey";
+            var dt = 2;
+            context.fillText("2D Canvas Drawing", dim/2, 100+dt);
+            context.fillText("2D Canvas Drawing", dim/2, 100-dt);
+            context.fillText("2D Canvas Drawing", dim/2+dt, 100);
+            context.fillText("2D Canvas Drawing", dim/2-dt, 100);
+            context.font = "42px Arial";
+            context.fillStyle = "black";
+            context.fillText("2D Canvas Drawing", dim/2, 100);
         </script>
     </body>
 </html>
