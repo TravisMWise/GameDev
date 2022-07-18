@@ -1,3 +1,5 @@
+import draw_grid from './drawings';
+
 // Get the canvas and set the context to 2d
 var canvas = document.getElementById("asteroids");
 var ctx = canvas.getContext("2d");

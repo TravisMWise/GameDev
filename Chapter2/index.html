@@ -3,9 +3,53 @@
     <head>
         <title>Drawing on the canvas</title>
         <link rel="stylesheet" href="style.css">
+        <script src="drawings.js"></script>
     </head>
     <body>
         <canvas id="asteroids"></canvas>
-        <script src="main.js"></script>
+        <script>
+            // Get the canvas and set the context to 2d
+            var canvas = document.getElementById("asteroids");
+            var ctx = canvas.getContext("2d");
+            var context = ctx;
+            // Set the size of the canvas
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            // function draw_grid(ctx, minor, major, stroke, fill)
+            draw_grid(ctx, 10, 50, 'yellow', 'yellow');
+            ctx.beginPath();
+            ctx.strokeStyle = "#FFFFFF";
+            ctx.fillStyle = "#00FF00";
+            ctx.lineWidth = 2;
+            ctx.moveTo(50, 50);
+            ctx.lineTo(150, 250);
+            ctx.lineTo(250, 170);
+            ctx.closePath();
+            ctx.stroke();
+            ctx.fillText("(50, 50)", 30, 40);
+            ctx.fillText("(150, 250)", 130, 260);
+            ctx.fillText("(250, 170)", 255, 175);
+            context.fillStyle = "#000000";
+            context.fill();
+            
+            context.beginPath()
+            context.moveTo(50, 250);
+            context.lineTo(50, 350);
+            context.lineTo(150, 350);
+            context.closePath();
+            context.moveTo(230, 360);
+            context.lineTo(270, 360);
+            context.lineTo(270, 310);
+            context.closePath();
+            context.moveTo(250, 50);
+            context.lineTo(370, 50);
+            context.lineTo(370, 100);
+            context.closePath();
+            context.strokeStyle = "#FFFF00";
+            context.fillStyle = "#000000";
+            context.fill();
+            context.stroke();
+        </script>
     </body>
 </html>
