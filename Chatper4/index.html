@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Drawing on the canvas</title>
+        <link rel="stylesheet" href="styles.css">
+        <script src="drawings.js"></script>
+    </head>
+    <body>
+        <canvas id="pacman"></canvas>
+        <script>
+            // Get the canvas and set the context to 2d
+            var canvas = document.getElementById("pacman");
+            var ctx = canvas.getContext("2d");
+            var context = ctx;
+            // Set the size of the canvas
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            draw_grid(ctx);
+            draw_ship(ctx, 200, 200, 150, {guide: true});
+        </script>
+    </body>
+</html>
