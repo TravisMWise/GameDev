@@ -17,9 +17,19 @@
             canvas.height = window.innerHeight;
 
             draw_grid(ctx);
-            for (var i = 100; i < 600; i += 150)
-                for (var j = 100; j < 600; j += 150)
-                    draw_pacman(ctx,i,j,50,Math.random());
+            // for (var i = 100; i < 600; i += 150)
+            //     for (var j = 100; j < 600; j += 150)
+            //         draw_pacman(ctx,i,j,50,Math.random());
+
+            var min = 25;
+            var max = 100;
+            do {
+                let x = ctx.canvas.width * Math.random();
+                let y = ctx.canvas.height * Math.random();
+                let radius = min + (max - min) * Math.random();
+                draw_pacman(ctx, x, y, radius, Math.random());
+            }
+            while(Math.random() < 0.9);
         </script>
     </body>
 </html>
