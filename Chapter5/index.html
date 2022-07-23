@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Document</title>
+    <script src="drawings.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <canvas id="asteroids"></canvas>
+    <script>
+        let canvas = document.getElementById("asteroids");
+        let ctx = canvas.getContext("2d");
+        ctx.canvas.width = window.innerWidth;
+        ctx.canvas.height = window.innerHeight;
+
+        draw_grid(ctx);
+
+        let segments = 15; noise = 0;
+        var shape = [];
+        for (var i = 0; i < segments; i++) {
+            shape.push(2 * (Math.random() - 0.5));
+        }
+        for (let x = 0.1; x < 1; x += 0.2) {
+            for (let y = 0.1; y < 1; y += 0.2) {
+                ctx.save();
+                ctx.translate(ctx.canvas.width * x, ctx.canvas.height * y);
+                draw_asteroids(ctx, ctx.canvas.width / 16, shape, {guide: true, noise: noise});
+                ctx.restore();
+                noise += 0.0125;
+            }
+        }
+        console.log(shape);
+    </script>
+</body>
+</html>
