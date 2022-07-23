@@ -6,18 +6,31 @@
         <script src="drawings.js"></script>
     </head>
     <body>
-        <canvas id="pacman"></canvas>
+        <canvas id="asteroids"></canvas>
         <script>
             // Get the canvas and set the context to 2d
-            var canvas = document.getElementById("pacman");
-            var ctx = canvas.getContext("2d");
-            var context = ctx;
+            var canvas = document.getElementById("asteroids");
+            var context = canvas.getContext("2d");
+
             // Set the size of the canvas
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
 
-            draw_grid(ctx);
-            draw_ship(ctx, 200, 200, 150, {guide: true});
+            draw_grid(context);
+            let c1 = 0, c2 = 0;
+            for(c1=0.1; c1<1; c1+=0.2) {
+                for(c2=0.1; c2<1; c2+=0.2) {
+                    context.save();
+                    context.translate(context.canvas.width * c1, context.canvas.height * c2);
+                    context.rotate(-Math.PI/2);
+                    draw_ship(
+                        context, 
+                        context.canvas.width / 12, 
+                        {curve1: c1, curve2: c2, guide : true}
+                    );
+                    context.restore();
+                }
+            }
         </script>
     </body>
 </html>
