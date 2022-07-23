@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Animation</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="drawings.js"></script>
+</head>
+<body>
+    <canvas id="asteroids"></canvas>
+    <script>
+        let canvas = document.getElementById("asteroids");
+        let ctx = canvas.getContext("2d");
+        ctx.canvas.width = 300;
+        ctx.canvas.height = 300;
+
+        // draw_grid(ctx);
+
+        ctx.strokeStyle = "white";
+        ctx.lineWidth = 1.5;
+        let x = 0, y = ctx.canvas.height/2, radius = 20;
+        let xSpeed = 1.5, ySpeed = 0, gravity = 0.1;
+        // let theta = 0;
+        let mouth = 0;
+        function frame() {
+            ctx.clearRect(0,0,ctx.canvas.width,ctx.canvas.height);
+            draw(ctx);
+            update();
+        }
+        function update() {
+            x += xSpeed;
+            y += ySpeed;
+            ySpeed += gravity;
+            if (y > ctx.canvas.height - radius) {
+                y = ctx.canvas.height - radius; // add an extra radius
+                ySpeed *= -0.9; // reverse and slow down
+                xSpeed *= 1; // slow down a bit
+            } 
+            if (x <= 0 || x >= ctx.canvas.width + radius) {
+                x = (x + ctx.canvas.width - radius) % ctx.canvas.width;
+            }
+            mouth = Math.abs(Math.sin(6 * Math.PI * x / ctx.canvas.width));
+        }
+        function draw(ctx) {
+            draw_grid(ctx);
+            ctx.beginPath();
+            ctx.save();
+            ctx.translate(x,y);
+            draw_pacman(ctx,radius, mouth);
+            ctx.restore();
+        }
+        setInterval(frame, 1000.0/60.0); // 60 fps
+    </script>
+</body>
+</html>

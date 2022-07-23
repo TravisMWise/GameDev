@@ -1,0 +1,8 @@
+body {
+    background-color: black;
+    margin: 0 auto;
+    padding: 0;
+}
+canvas {
+    background-color: rgba(0, 0, 0, 0.907);
+}
