@@ -93,7 +93,6 @@ class Asteroid extends Mass {
         ctx.translate(this.x, this.y);
         ctx.rotate(this.angle);
         draw_asteroid(ctx,this.radius,this.shape,{noise: this.noise, guide});
-        console.log(guide)
         ctx.restore();
     }
 };
@@ -139,16 +138,32 @@ class PacMan {
         ctx.restore();
     }
 
-    update(elapsed, width, height) {
-        // an average of once per 100 frames
-        if (Math.random() <= 0.01) {
-            if (Math.random() < 0.5) {
-                this.turn_left();
-            } else {
-                this.turn_right();
-            }
-        }
+    move_right() {
+        this.x_speed = this.speed;
+        this.y_speed = 0;
+        this.angle = 0;
+    }
 
+    move_left() {
+        this.x_speed = -this.speed;
+        this.y_speed = 0;
+        this.angle = Math.PI;
+    }
+    
+    move_down() {
+        this.x_speed = 0;
+        this.y_speed = this.speed;
+        this.angle = 0.5 * Math.PI;
+    }
+
+    move_up() {
+        this.x_speed = 0
+        this.y_speed = -this.speed;
+        this.angle = 1.5 * Math.PI;
+    }
+
+
+    update(elapsed, width, height) {
         if (this.x - this.radius + elapsed * this.x_speed > width) {
             this.x = -this.radius;
         }
@@ -165,36 +180,6 @@ class PacMan {
         this.y += this.y_speed * elapsed;
         this.time += elapsed;
         this.mouth = Math.abs(Math.sin(2 * Math.PI * this.time));
-        console.log(this.time);
-    }
-
-    turn(direction) {
-        if (this.y_speed) {
-            // if we are traveling vertically
-            // set the horizontal speed and apply the direction
-            this.x_speed = -direction * this.y_speed;
-            // clear the vertical speed and rotate
-            this.y_speed = 0;
-            this.angle = this.x_speed > 0 ? 0 : Math.PI; // 0 if we are moving right, PI if we are moving left 
-        } else {
-            // if we are traveling horizontally
-            // set the vertical speed and apply yhe direction
-            this.y_speed = direction * this.x_speed;
-
-            // clear the horizontal speed and rotate
-            this.x_speed = 0;
-            this.angle = this.y_speed > 0 ? 0.5 * Math.PI : 1.5 * Math.PI; // PI/2 or 3PI/2
-        }
-
-
-    }
-
-    turn_left() {
-        this.turn(-1);
-    }
-
-    turn_right() {
-        this.turn(1);
     }
 }
 
