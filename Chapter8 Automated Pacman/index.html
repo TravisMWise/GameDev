@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Animation</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="drawings.js"></script>
+    <script src="objects.js"></script>
+</head>
+<body>
+    <canvas id="pacman"></canvas>
+    <script>
+        let context = document.getElementById("pacman").getContext("2d");
+        context.canvas.width = window.innerWidth;
+        context.canvas.height= window.innerHeight - 20;
+        
+        // Initiate objects
+        let pacman = new PacMan(150, 150, 30, 200);
+        let ghosts = [
+            new Ghost(
+                Math.random() * context.canvas.width, 
+                Math.random() * context.canvas.height,
+                40,
+                100,
+                "red"
+            ),
+            new Ghost(
+                Math.random() * context.canvas.width, 
+                Math.random() * context.canvas.height,
+                40,
+                100,
+                "blue"
+            ),
+            new Ghost(
+                Math.random() * context.canvas.width, 
+                Math.random() * context.canvas.height,
+                40,
+                100,
+                "green"
+            ),
+            new Ghost(
+                Math.random() * context.canvas.width, 
+                Math.random() * context.canvas.height,
+                40,
+                100,
+                "lightblue"
+            ),
+            new Ghost(
+                Math.random() * context.canvas.width, 
+                Math.random() * context.canvas.height,
+                40,
+                100,
+                "lightgreen"
+            ),
+        ];
+
+        function draw(context, guide) {
+            if (guide) {
+                draw_grid(context);
+            }
+            pacman.draw(context);
+            ghosts.forEach((ghost) => {
+                ghost.draw(context);
+            })
+        }
+        function update(elapsed) {
+            pacman.update(elapsed, context.canvas.width, context.canvas.height);
+            ghosts.forEach((ghost) => {
+                ghost.update(pacman, elapsed);
+            })
+        }
+        var previous, elapsed;
+        function frame(timestamp) {
+            context.clearRect(0,0,context.canvas.width,context.canvas.height);
+            if (!previous) {
+                previous = timestamp;
+            }
+            elapsed = timestamp - previous;
+            update(elapsed / 1000);
+            draw(context, true);
+            previous = timestamp;
+            window.requestAnimationFrame(frame);
+        } 
+        window.requestAnimationFrame(frame);
+
+
+    </script>
+</body>
+</html>
