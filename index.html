@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Animation</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="drawings.js"></script>
+    <script src="objects.js"></script>
+</head>
+<body>
+    <canvas id="drawing"></canvas>
+    <script>
+        'use strict';
+        let context = document.getElementById("drawing").getContext("2d");
+        let w = context.canvas.width = window.innerWidth;
+        let h = context.canvas.height= window.innerHeight - 20;
+        let guide = false;
+
+        // constructor(mass, x, y, x_speed, y_speed, rotation_speed)
+        let asteroids = [];
+        for (let i = 0; i < 20; i++) {
+            asteroids.push( 
+                new Asteroid(
+                    Math.max(2000, (Math.random() + 1) * 2000),  // Mass 
+                    Math.random() * w,                           // x
+                    Math.random() * h,                           // y
+                    Math.random() * 100,                         // x_speed
+                    Math.random() * -100,                        // y_speed
+                    Math.random() * 2),                          // rotation_speed
+            );
+        } 
+        // constructor(mass, radius, x, y, power, weapon_power)
+        let ship = new Ship(1, 40, w/2, h/2, 400, 1250);
+        let projectiles = [];
+
+        function key_handler(e, value) {
+            // console.log(e);
+            switch(e.key) {
+                case "ArrowUp":
+                case "w":
+                    ship.thruster_on = value;
+                    break;
+                case "ArrowLeft":
+                case "a":
+                    ship.left_thruster = value;
+                    break;
+                case "ArrowRight":
+                case "d":
+                    ship.right_thruster = value;
+                    break;
+                // case "s":
+                // case "ArrowDown":
+                //     ship.forward_thruster_on = value;
+                //     break;
+                case " ": // Spacebar
+                    ship.trigger = value;
+                    break;
+                case "q":
+                    ship.x_speed = 0;
+                    ship.y_speed = 0;
+                    ship.rotation_speed = 0;
+                    break;
+                case "g":
+                    if (value) {
+                        guide = !guide;
+                    }
+                    break;
+
+            }
+        }
+        window.addEventListener("keydown", (e) => { key_handler(e, true); }, true);
+        window.addEventListener("keyup", (e) => { key_handler(e, false); }, true);
+        
+        function draw(context, guide) {
+            context.clearRect(0,0,context.canvas.width,context.canvas.height);
+            if (guide) {
+                draw_grid(context);
+            }
+            asteroids.forEach((asteroid) => {
+                asteroid.draw(context, guide);
+            });
+            projectiles.forEach((projectile) => {
+                projectile.draw(context);
+            });
+            ship.draw(context, guide);
+        }
+
+        function update(elapsed) {
+            asteroids.forEach((asteroid) => {
+                asteroid.update(elapsed, context);
+            });
+            ship.update(elapsed, context);
+            projectiles.forEach((projectile, i, projectiles) => {
+                projectile.update(elapsed, context);
+                if (projectile.life <= 0) {
+                    projectiles.splice(i, 1);
+                }
+            })
+            if (ship.trigger && ship.loaded) {
+                projectiles.push(ship.projectile(elapsed));
+            }
+        }
+
+        var previous, elapsed;
+        function frame(timestamp) {
+            if (!previous) {
+                previous = timestamp;
+            }
+            elapsed = timestamp - previous;
+            update(elapsed / 1000);
+            draw(context, guide);
+            previous = timestamp;
+            window.requestAnimationFrame(frame);
+        } 
+        
+        window.requestAnimationFrame(frame);
+    </script>
+</body>
+</html>
