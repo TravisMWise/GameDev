@@ -83,8 +83,49 @@ function draw_ship(ctx, radius, options) {
         );
         ctx.fill();
         ctx.stroke();
+        
+        ctx.lineWidth = 4;
+        ctx.moveTo(radius, 0); // Start at the right point
+        ctx.quadraticCurveTo(
+            Math.cos(angle) * radius * curve2,
+            Math.sin(angle) * radius * curve2,
+            Math.cos(Math.PI - angle) * radius,
+            Math.sin(Math.PI - angle) * radius
+        );
+        ctx.quadraticCurveTo(
+            -radius * curve1, 
+            0,
+            Math.cos(Math.PI + angle) * radius,
+            Math.sin(Math.PI + angle) * radius
+        );
+        ctx.quadraticCurveTo(
+            Math.cos(-angle) * radius * curve2,
+            Math.sin(-angle) * radius * curve2,
+            radius, 
+            0
+        );
+        ctx.fill();
+        ctx.stroke();
         ctx.restore();
     }
+
+    // if (options.forward_thruster_on) {
+    //     ctx.save();
+    //     ctx.strokeStyle = "yellow";
+    //     ctx.fillStyle = "red";
+    //     ctx.lineWidth = 3;
+    //     ctx.beginPath();
+    //     ctx.arc(-Math.cos(angle * Math.PI) * radius - radius / 5, Math.sin(angle * Math.PI) * radius - radius / 5, 5 , 0, 2 * Math.PI);
+    //     ctx.closePath();
+    //     ctx.fill();
+    //     ctx.stroke();
+    //     ctx.beginPath();
+    //     ctx.arc(-Math.cos(-angle * Math.PI) * radius - radius / 5, Math.sin(-angle * Math.PI) * radius + radius / 5, 5 , 0, 2 * Math.PI);
+    //     ctx.closePath();
+    //     ctx.fill();
+    //     ctx.stroke();
+    //     ctx.restore();
+    // }
 
     // Draw the ship in three lines
     ctx.beginPath();
@@ -207,7 +248,8 @@ function draw_asteroid(ctx, radius, shape, options) {
 function draw_projectile(ctx, radius, lifetime, guide) {
     ctx.save();
     ctx.fillStyle = "rgb(100%, 100%," + (100 * lifetime) + "%)";
-    ctx.arc(0,0,20,0,2 * Math.PI);
+    ctx.beginPath();
+    ctx.arc(0,0,5 ,0,2 * Math.PI);
     ctx.fill();
     ctx.restore();
 }
@@ -261,6 +303,5 @@ function draw_ghost(ctx, radius, options) {
     ctx.stroke();
     ctx.fill();
     
-
     ctx.restore();
 }

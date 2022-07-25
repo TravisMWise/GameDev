@@ -97,7 +97,6 @@ class Asteroid extends Mass {
 };
 
 class Ship extends Mass {
-    // mass, radius, x, y, angle, x_speed, y_speed, rotation_speed
     constructor(mass, radius, x, y, power, weapon_power) {
         // Mass(mass, radius, x, y, angle, x_speed, y_speed, rotation_speed)
         super(mass, radius, x, y, 1.5 * Math.PI, 0, 0, 0);
@@ -108,13 +107,16 @@ class Ship extends Mass {
         this.thruster_on = false;
         this.weapon_power = weapon_power || 200;
         this.trigger = false;
+        this.loaded = false;
+        this.weapon_reload_time = 0.15; // seconds
+        this.time_until_reload = this.weapon_reload_time;
     }
 
     projectile(elapsed) {
-        // (mass, lifetime, x, y, x_speed, y_speed, rotation_speed)
+        // Projectile(mass, lifetime, x, y, x_speed, y_speed, rotation_speed)
         let p = new Projectile(
             0.025, 
-            1, 
+            1.5, 
             this.x + Math.cos(this.angle) * this.radius,
             this.y + Math.sin(this.angle) * this.radius,
             this.x_speed,
@@ -122,7 +124,8 @@ class Ship extends Mass {
             this.rotation_speed
         );
         p.push(this.angle, this.weapon_power, elapsed);
-        this.push(this.angle + Math.PI, this.weapon_power, elapsed);
+        this.time_until_reload = this.weapon_reload_time;
+
         return p;
     }
 
@@ -132,12 +135,18 @@ class Ship extends Mass {
         ctx.rotate(this.angle);
         draw_ship(ctx, this.radius, {
             guide: guide,
-            thruster_on: this.thruster_on
+            thruster_on: this.thruster_on,
+            forward_thruster_on: this.forward_thruster_on
         });
         ctx.restore();
     }
 
     update(elapsed, ctx) {
+        // reload as needed
+        this.loaded = this.time_until_reload === 0;
+        if (!this.loaded) {
+            this.time_until_reload -= Math.min(elapsed, this.time_until_reload)
+        } 
         this.push(this.angle, this.thruster_on * this.thruster_power, elapsed);
         this.twist((this.right_thruster - this.left_thruster) * this.steering_power, elapsed);
         super.update.apply(this, arguments);
@@ -146,7 +155,7 @@ class Ship extends Mass {
 
 class Projectile extends Mass {
     constructor (mass, lifetime, x, y, x_speed, y_speed, rotation_speed) {
-        let density = 0.001; // low density means we can see very light projectiles
+        let density = 0.00001; // low density means we can see very light projectiles
         let radius = Math.sqrt((mass / density) / Math.PI);
         super(mass, radius, x, y, 0, x_speed, y_speed, rotation_speed);
         this.lifetime = lifetime;
@@ -163,7 +172,22 @@ class Projectile extends Mass {
 
     update(elapsed, ctx) {
         this.life -= (elapsed / this.lifetime);
-        super.update.apply(this, arguments);
+        this.x += this.x_speed * elapsed;
+        this.y += this.y_speed * elapsed;
+        this.angle += this.rotation_speed * elapsed;
+        this.angle %= (2 * Math.PI);
+        // if (this.x - this.radius > ctx.canvas.width) {
+        //     this.x = -this.radius;
+        // }
+        // if (this.x + this.radius < 0) {
+        //     this.x = ctx.canvas.width + this.radius;
+        // }
+        // if (this.y - this.radius > ctx.canvas.height) {
+        //     this.y = -this.radius;
+        // }
+        // if (this.y + this.radius < 0) {
+        //     this.y = ctx.canvas.height + this.radius;
+        // }
     }
 }
 

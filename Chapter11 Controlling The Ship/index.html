@@ -28,7 +28,8 @@
                     Math.random() * 2),                          // rotation_speed
             );
         } 
-        let ship = new Ship(1, 40, w/2, h/2, 400, 200);
+        // constructor(mass, radius, x, y, power, weapon_power)
+        let ship = new Ship(1, 40, w/2, h/2, 400, 1250);
         let projectiles = [];
 
         function key_handler(e, value) {
@@ -36,7 +37,6 @@
             switch(e.key) {
                 case "ArrowUp":
                 case "w":
-                case "Shift":
                     ship.thruster_on = value;
                     break;
                 case "ArrowLeft":
@@ -47,8 +47,17 @@
                 case "d":
                     ship.right_thruster = value;
                     break;
+                // case "s":
+                // case "ArrowDown":
+                //     ship.forward_thruster_on = value;
+                //     break;
                 case " ": // Spacebar
                     ship.trigger = value;
+                    break;
+                case "q":
+                    ship.x_speed = 0;
+                    ship.y_speed = 0;
+                    ship.rotation_speed = 0;
                     break;
                 case "g":
                     if (value) {
@@ -86,7 +95,7 @@
                     projectiles.splice(i, 1);
                 }
             })
-            if (ship.trigger) {
+            if (ship.trigger && ship.loaded) {
                 projectiles.push(ship.projectile(elapsed));
             }
         }
