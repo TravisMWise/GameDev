@@ -1,9 +1,8 @@
 body {
-    text-align: center;
-    font-family: sans-serif;
-    margin: 0;
+    background-color: black;
+    margin: 0 auto;
     padding: 0;
 }
 canvas {
-    background-color: black;
+    background-color: rgba(0, 0, 0, 0.907);
 }

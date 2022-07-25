@@ -6,12 +6,23 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <a href="../Chapter1/index.html">Chapter1</a>
+    <a href="../Chapter2/index.html">Chapter2</a>
+    <a href="../Chapter3/index.html">Chapter3</a>
+    <a href="../Chapter4/index.html">Chapter4</a>
+    <a href="../Chapter5/index.html">Chapter5</a>
+    <a href="../Chapter6 Animation/index.html">Chapter6</a>
+    <a href="../Chapter7 Asteroids Animation/">Chapter7</a>
+    <a href="../Chapter8 Automated Pacman/">Chapter8</a>
+    <a href="../Chapter9 Inheritance/">Chapter9</a>
+    <a href="../Chapter10 Keyboard Interaction/">Chapter10</a>
+    <a href="../Chapter11 Controlling The Ship/">Chapter11</a>
     <canvas id="asteroids"></canvas>
     <script>
         let canvas = document.getElementById("asteroids");
         let ctx = canvas.getContext("2d");
         ctx.canvas.width = window.innerWidth;
-        ctx.canvas.height = window.innerHeight;
+        ctx.canvas.height = window.innerHeight - 30;
 
         draw_grid(ctx);
 
@@ -24,7 +35,7 @@
             for (let y = 0.1; y < 1; y += 0.2) {
                 ctx.save();
                 ctx.translate(ctx.canvas.width * x, ctx.canvas.height * y);
-                draw_asteroids(ctx, ctx.canvas.width / 16, shape, {guide: true, noise: noise});
+                draw_asteroids(ctx, ctx.canvas.width / 38, shape, {guide: true, noise: noise});
                 ctx.restore();
                 noise += 0.0125;
             }
