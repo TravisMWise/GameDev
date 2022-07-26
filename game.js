@@ -23,6 +23,7 @@ class AsteroidsGame {
         this.canvas.addEventListener("keyup", this.keyUp.bind(this), true);
         this.mass_destroyed = 500;
         this.score = 0;
+        this.level = 1;
         this.game_over = false;
         window.requestAnimationFrame(this.frame.bind(this));
 
@@ -31,14 +32,15 @@ class AsteroidsGame {
         this.score_indicator = new NumberIndicator("Score", this.canvas.width - 10, 5);
         this.fps_indicator = new NumberIndicator("FPS", this.canvas.width - 10, this.canvas.height - 15, {digits: 2});
         this.message = new Message(this.canvas.width / 2, this.canvas.height * 0.4);
-
+        this.level_indicator = new NumberIndicator("Level", this.canvas.width/2, 5, { align: "center" });
         // Start the game
         this.reset_game();
     }
 
     reset_game() {
-        this.game_over = false;
         this.score = 0;
+        this.level = 0;
+        this.game_over = false;
         this.ship = new Ship(
             this.ship_mass, 
             this.ship_radius, 
@@ -49,9 +51,7 @@ class AsteroidsGame {
         );
         this.projectiles = [];
         this.asteroids = [];
-        for (let i = 0; i < 10; i++) {
-            this.asteroids.push(this.moving_asteroid());
-        }
+        this.level_up();
     }
 
     frame(timestamp) {
@@ -67,7 +67,7 @@ class AsteroidsGame {
     update(elapsed) {
         this.ship.compromised = false;
         if (this.asteroids.length === 0) {
-            this.game_over = true;
+            this.level_up();
         } else {
             this.asteroids.forEach((asteroid) => {
                 asteroid.update(elapsed, this.c);
@@ -117,10 +117,7 @@ class AsteroidsGame {
         if (this.game_over && this.ship.health === 0) {
             this.message.draw(this.c, "GAME OVER", "Press enter to play again");
             return;
-        } else if (this.game_over && this.ship.health > 0) {
-            this.message.draw(this.c, "YOU WIN", "Press enter to play again");
-            return;
-        }
+        } 
         this.ship.draw(this.c, this.guide);
         this.projectiles.forEach((p) => {
             p.draw(this.c);
@@ -128,6 +125,14 @@ class AsteroidsGame {
         this.fps_indicator.draw(this.c, this.fps);
         this.health_indicator.draw(this.c,this.ship.health,this.ship.max_health);
         this.score_indicator.draw(this.c, this.score);
+        this.level_indicator.draw(this.c, this.level);
+    }
+    
+    level_up() {
+        this.level += 1;
+        for (let i = 0; i < this.level; i++) {
+            this.asteroids.push(this.moving_asteroid());
+        }
     }
 
     moving_asteroid(elapsed) {
