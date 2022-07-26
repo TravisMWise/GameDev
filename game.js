@@ -115,7 +115,7 @@ class AsteroidsGame {
             asteroid.draw(this.c, this.guide);
         }, this);
         if (this.game_over && this.ship.health === 0) {
-            this.message.draw(this.c, "GAME OVER [ Score: " + this.score + " ]", "Press enter to play again");
+            this.message.draw(this.c, "GAME OVER [ Score: " + Math.floor(this.score) + " ]", "Press enter to play again");
             return;
         } 
         this.ship.draw(this.c, this.guide);
