@@ -19,29 +19,115 @@ class AsteroidsGame {
         this.ship_radius = 30;
         this.asteroid_mass = 5000; // Mass of asteroids
         this.asteroid_push = 500000; // max force to apply in one frame
-        // Ship(mass, radius, x, y, power, weapon_power)
-        this.ship = new Ship(
-            this.ship_mass, 
-            this.ship_radius, 
-            this.canvas.width / 2,
-            this.canvas.height / 2,
-            500,
-            1000);
-        this.projectiles = [];
-        this.asteroids = [];
-        for (let i = 0; i < 10; i++) {
-            this.asteroids.push(this.moving_asteroid());
-        }
         this.canvas.addEventListener("keydown", this.keyDown.bind(this), true);
         this.canvas.addEventListener("keyup", this.keyUp.bind(this), true);
         this.mass_destroyed = 500;
         this.score = 0;
+        this.game_over = false;
         window.requestAnimationFrame(this.frame.bind(this));
 
         // Indicators
         this.health_indicator = new Indicator("Health", 5, 5, 100, 10);
         this.score_indicator = new NumberIndicator("Score", this.canvas.width - 10, 5);
         this.fps_indicator = new NumberIndicator("FPS", this.canvas.width - 10, this.canvas.height - 15, {digits: 2});
+        this.message = new Message(this.canvas.width / 2, this.canvas.height * 0.4);
+
+        // Start the game
+        this.reset_game();
+    }
+
+    reset_game() {
+        this.game_over = false;
+        this.score = 0;
+        this.ship = new Ship(
+            this.ship_mass, 
+            this.ship_radius, 
+            this.canvas.width / 2,
+            this.canvas.height / 2,
+            500,
+            1000
+        );
+        this.projectiles = [];
+        this.asteroids = [];
+        for (let i = 0; i < 10; i++) {
+            this.asteroids.push(this.moving_asteroid());
+        }
+    }
+
+    frame(timestamp) {
+        if (!this.previous) this.previous = timestamp;
+        var elapsed = timestamp - this.previous;
+        this.update(elapsed / 1000);
+        this.fps = 1000 / elapsed;
+        this.draw()
+        this.previous = timestamp;
+        window.requestAnimationFrame(this.frame.bind(this));
+    }
+
+    update(elapsed) {
+        this.ship.compromised = false;
+        if (this.asteroids.length === 0) {
+            this.game_over = true;
+        } else {
+            this.asteroids.forEach((asteroid) => {
+                asteroid.update(elapsed, this.c);
+                if (collision(asteroid, this.ship)) {
+                    this.ship.compromised = true;
+                }
+            }, this);
+        }
+        if (this.ship.health <= 0) {
+            this.game_over = true;
+            return;
+        }
+        this.ship.update(elapsed, this.c);
+        this.projectiles.forEach((p, i, projectiles) => {
+            p.update(elapsed, this.c);
+            if (p.life <= 0) {
+                projectiles.splice(i, 1);
+            } else {
+                this.asteroids.forEach((asteroid, j) => {
+                    if (collision(asteroid, p)) {
+                        projectiles.splice(i, 1);
+                        this.asteroids.splice(j,1);
+                        this.split_asteroid(asteroid, elapsed);
+                    }
+                }), this;
+            }
+        }, this);
+        if (this.ship.trigger && this.ship.loaded) {
+            this.projectiles.push(this.ship.projectile(elapsed));
+        }
+    }
+
+    draw() {
+        this.c.clearRect(0,0,this.canvas.width,this.canvas.height);
+        if (this.guide) {
+            draw_grid(this.c);
+            this.asteroids.forEach((asteroid) => {
+                draw_line(this.c, asteroid, this.ship);
+                this.projectiles.forEach((p) => {
+                    draw_line(this.c, p, asteroid);
+                }, this);
+            }, this);
+        }
+        this.asteroids.forEach((asteroid) => {
+            asteroid.draw(this.c, this.guide);
+        }, this);
+        if (this.game_over && this.ship.health === 0) {
+            this.message.draw(this.c, "GAME OVER", "Press enter to play again");
+            return;
+        } else if (this.game_over && this.ship.health > 0) {
+            this.message.draw(this.c, "YOU WIN", "Press enter to play again");
+            return;
+        }
+        this.ship.draw(this.c, this.guide);
+        this.projectiles.forEach((p) => {
+            p.draw(this.c);
+        }, this);
+        this.fps_indicator.draw(this.c, this.fps);
+        this.health_indicator.draw(this.c,this.ship.health,this.ship.max_health);
+        this.score_indicator.draw(this.c, this.score);
     }
 
     moving_asteroid(elapsed) {
@@ -97,6 +183,13 @@ class AsteroidsGame {
             case 32:
                 this.ship.trigger = bool;
                 break;
+            case "Enter":
+                if (this.game_over) {
+                    this.reset_game();
+                } else {
+                    nothing_handled = true;
+                }
+                break;
             case "q":
                 this.ship.x_speed = 0;
                 this.ship.y_speed = 0;
@@ -128,65 +221,5 @@ class AsteroidsGame {
         }, this);
     }
 
-    frame(timestamp) {
-        if (!this.previous) this.previous = timestamp;
-        var elapsed = timestamp - this.previous;
-        this.update(elapsed / 1000);
-        this.fps = 1000 / elapsed;
-        this.draw()
-        this.previous = timestamp;
-        window.requestAnimationFrame(this.frame.bind(this));
-    }
-
-    update(elapsed) {
-        this.ship.compromised = false;
-        this.asteroids.forEach((asteroid) => {
-            asteroid.update(elapsed, this.c);
-            if (collision(asteroid, this.ship)) {
-                this.ship.compromised = true;
-            }
-        }, this);
-        this.ship.update(elapsed, this.c);
-        this.projectiles.forEach((p, i, projectiles) => {
-            p.update(elapsed, this.c);
-            if (p.life <= 0) {
-                projectiles.splice(i, 1);
-            } else {
-                this.asteroids.forEach((asteroid, j) => {
-                    if (collision(asteroid, p)) {
-                        projectiles.splice(i, 1);
-                        this.asteroids.splice(j,1);
-                        this.split_asteroid(asteroid, elapsed);
-                    }
-                }), this;
-            }
-        }, this);
-        if (this.ship.trigger && this.ship.loaded) {
-            this.projectiles.push(this.ship.projectile(elapsed));
-        }
-    }
-
-    draw() {
-        this.c.clearRect(0,0,this.canvas.width,this.canvas.height);
-        if (this.guide) {
-            draw_grid(this.c);
-            this.asteroids.forEach((asteroid) => {
-                draw_line(this.c, asteroid, this.ship);
-                this.projectiles.forEach((p) => {
-                    draw_line(this.c, p, asteroid);
-                }, this);
-            }, this);
-        }
-        this.asteroids.forEach((asteroid) => {
-            asteroid.draw(this.c, this.guide);
-        }, this);
-        this.ship.draw(this.c, this.guide);
-        this.projectiles.forEach((p) => {
-            p.draw(this.c);
-        }, this);
-        this.fps_indicator.draw(this.c, this.fps);
-        this.health_indicator.draw(this.c,this.ship.health,this.ship.max_health);
-        this.score_indicator.draw(this.c, this.score);
-    }
-
+    
 }
